@@ -1,3 +1,11 @@
+# Process exporter along with the algorithm of automatic generation of configuration file
+
+This process exporter is based on [ncabatoff/process-exporter](https://github.com/ncabatoff/process-exporter.git), combined with the algorithm of automatic generation of configuration file. The algorithm is based on the fact that the processes in a container are children of the session leader of the container. The session leader is the first process in the container. The algorithm is implemented in `get_cmd.sh` and `exe.sh`. 
+
+- Docker imgae is built from the Dockerfile in this directory and uploaded to [jlabtsai/process-exporter/v1.0](https://hub.docker.com/repository/docker/jlabtsai/process-exporter).
+
+
+
 # Find PIDs of processes running in a container
 
 To use process-exporter, one needs to know the PIDs of the processes to be monitored. This is easy if the processes are running on the host, but if they are running in a container, it is not. Here is a way to find the PIDs of processes running in a container. It is tested on Perlmutter. It may not work on other machines.
