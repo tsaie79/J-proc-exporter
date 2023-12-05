@@ -1,8 +1,2 @@
 # Features in this branch
-This branch requires users to place your own config file `$HOME/config.yml`. Template of config.yml is shown below, and you can also find it in [process-exporter](https://github.com/ncabatoff/process-exporter.git) repository.
-
-## Template of config.yml
-```yaml
-process_names:
-- name: "{{.ExeBase}}:{{.Username}}"
-  comm:
+This branch is based on the branch `custom-config`. Instead of using `pgrep -s` to get the PIDs, it uses `pgrep -g` to get the PIDs. See `get_cmd.sh` for more details.
