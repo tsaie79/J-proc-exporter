@@ -1,2 +1,2 @@
 # Features of this Branch
-This branch originates from the `main` branch. It differs in its method of obtaining child Process IDs (PIDs); rather than using `pgrep -s`, it employs `pgrep -g`. Note that the environment variable `PGID`, which stores the path to the file containing the `pgid` of the executed script, is necessary. For more information, refer to `get_cmd.sh` and `exe.sh`.
+This branch originates from the `main` branch. It differs in its method of obtaining child Process IDs (PIDs); rather than using `pgrep -s`, it employs `pgrep -g`. Note that the environment variable `PGID_FILE`, which stores the path to the file containing the `pgid` of the executed script, is necessary. For more information, refer to `get_cmd.sh` and `exe.sh`.
