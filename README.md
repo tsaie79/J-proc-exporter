@@ -1,2 +1,2 @@
-# Features in this branch
-This branch is based on the branch `custom-config`. Instead of using `pgrep -s` to get the PIDs, it uses `pgrep -g` to get the PIDs. See `get_cmd.sh` for more details.
+# Features of this Branch
+This branch originates from the `main` branch. It differs in its method of obtaining child Process IDs (PIDs); rather than using `pgrep -s`, it employs `pgrep -g`. Note that the environment variable `PGID`, which stores the path to the file containing the `pgid` of the executed script, is necessary. For more information, refer to `get_cmd.sh` and `exe.sh`.
