@@ -11,7 +11,7 @@ import (
 
 
 // FILEPATH: /workspaces/J-proc-exporter/psgo/main.go
-func Run(inputYamlFile, outputYamlFile, newName, cmds, pgidFile, procPath string) {
+func Run(inputYamlFile, outputYamlFile, group, cmds, pgidFile, procPath string) {
     help := flag.Bool("help", false, "Show usage information")
     flag.Parse()
 
@@ -22,8 +22,8 @@ func Run(inputYamlFile, outputYamlFile, newName, cmds, pgidFile, procPath string
         fmt.Println("Options:")
         fmt.Println("  --inyml x.yml    Specifies the input YAML file. Optional.")
         fmt.Println("  --outyml y.yml   Specifies the output YAML file. Required.")
-        fmt.Println("  --name \"xxx\"    Specifies the new name. Optional.")
-        fmt.Println("  --cmds \"a b c\"  Specifies the commands. Either this or --pgid must be provided.")
+        fmt.Println("  --group \"{{.ExeBase}}:{{.Username}}\" Specifies the group. Optional.")
+        fmt.Println("  --cmds \"bash java\"  Specifies the commands. Either this or --pgid must be provided.")
         fmt.Println("  --pgid pgid.txt  Specifies the file containing the PGID. Either this or --cmds must be provided.")
         fmt.Println("  --procpath       Specifies the path to the /proc directory. Default is /proc.")
         fmt.Println("  --help           Show this help message.")
@@ -54,14 +54,14 @@ func Run(inputYamlFile, outputYamlFile, newName, cmds, pgidFile, procPath string
 	}
 
 	// If newName is an empty string, use the default name from the config
-	if newName == "" {
-		newName = config.DefaultName
+	if group == "" {
+		group = config.DefaultName
 		// println(newName)
-		fmt.Printf("%+v\n", newName)
+		fmt.Printf("%+v\n", group)
 	}
 
 	// Modify process names and add commands
-	config.ProcessNames = util.ModifyProcessNames(config.ProcessNames, newName, commands...)
+	config.ProcessNames = util.ModifyProcessNames(config.ProcessNames, group, commands...)
 
 	// Write config to file
 	err = util.WriteConfigToFile(config, outputYamlFile)
@@ -75,7 +75,7 @@ func Run(inputYamlFile, outputYamlFile, newName, cmds, pgidFile, procPath string
 func main() {
     inputYamlFile := flag.String("inyml", "", "Input YAML file")
     outputYamlFile := flag.String("outyml", "", "Output YAML file")
-    newName := flag.String("name", "", "New name")
+    newName := flag.String("group", "", "Group")
     cmds := flag.String("cmds", "", "Commands")
     pgidFile := flag.String("pgid", "", "File containing PGID")
     procPath := flag.String("procpath", "/proc", "Path to the /proc directory")
