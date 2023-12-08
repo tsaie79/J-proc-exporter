@@ -1,4 +1,4 @@
-module jprocexporter
+module github.com/tsaie79/J-proc-exporter
 
 go 1.21.5
 
