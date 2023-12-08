@@ -1,71 +1,82 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"strings"
-	"text/tabwriter"
-	"github.com/containers/psgo"
-	"io/ioutil"
-
+    "fmt"
+    "os"
+    "io/ioutil"
     "gopkg.in/yaml.v2"
 )
 
-
-func writeYaml() {
-    data := map[string]string{
-        "process_names": []map[string]string{
-				"names": "{{.ExeBase}}:{{.Username}}", 
-				"comm": "sshd",
-				"pid": "1",
-		}
-	}
-    
-
-    // Marshal data to YAML
-    yamlData, err := yaml.Marshal(data)
-    if err != nil {
-        panic(err)
-    }
-
-    // Write YAML data to file
-    err = ioutil.WriteFile("data.yaml", yamlData, 0644)
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Println("YAML data written to file.")
+type ProcessName struct {
+    Name string   `yaml:"name"`
+    Comm []string `yaml:"comm"`
 }
 
+type Config struct {
+    ProcessNames []ProcessName `yaml:"process_names"`
+}
 
+func addCommandsToProcessNames(processNames []ProcessName, commands ...string) []ProcessName {
+    for i := range processNames {
+        processNames[i].Comm = append(processNames[i].Comm, commands...)
+    }
+    return processNames
+}
 
+func readConfigFromFile(filename string) (Config, error) {
+    data, err := ioutil.ReadFile(filename)
+    if err != nil {
+        return Config{}, err
+    }
 
+    var config Config
+    err = yaml.Unmarshal(data, &config)
+    if err != nil {
+        return Config{}, err
+    }
 
+    return config, nil
+}
 
-func getComd() {
-	data, err := psgo.ProcessInfoByPids([]string{"1"}, []string{"user", "pid", "ppid", "pgid", "state", "pcpu", "comm"})
-	// data, err := psgo.ProcessInfoByPids([]string{"1"}, []string{"pid", "state"})
+func writeConfigToFile(config Config, filename string) error {
+    newYaml, err := yaml.Marshal(&config)
+    if err != nil {
+        return err
+    }
 
-	if err != nil {
-		log.Fatal(err)
-	}
+    err = ioutil.WriteFile(filename, newYaml, 0644)
+    if err != nil {
+        return err
+    }
 
-	cmds := []string{}
-	pid := []string{}
-	tw := tabwriter.NewWriter(os.Stdout, 5, 1, 3, ' ', 0)
-	for _, d := range data {
-		if d[4] == "S" {
-			fmt.Fprintln(tw, strings.Join(d, "\t"))
-			cmds = append(cmds, d[6])
-			pid = append(pid, d[1])
-		}
-	}	
-	tw.Flush()
-	fmt.Println(cmds)
-	fmt.Println(pid)
+    return nil
 }
 
 func main() {
-	writeYaml()
+    if len(os.Args) < 4 {
+        fmt.Println("Usage: <program> <input_yaml_file> <output_yaml_file> <commands...>")
+        os.Exit(1)
+    }
+
+    inputYamlFile := os.Args[1]
+    outputYamlFile := os.Args[2]
+    commands := os.Args[3:]
+
+    // Read config from file
+    config, err := readConfigFromFile(inputYamlFile)
+    if err != nil {
+        panic(err)
+    }
+
+    // Add commands to comm of each process_name
+    config.ProcessNames = addCommandsToProcessNames(config.ProcessNames, commands...)
+
+    // Print the config to verify it was read correctly
+    fmt.Printf("%+v\n", config)
+
+    // Write the updated config to a file
+    err = writeConfigToFile(config, outputYamlFile)
+    if err != nil {
+        panic(err)
+    }
 }
