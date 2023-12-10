@@ -8,10 +8,10 @@
 
 #if $GROUP is set, then export GROUP to $GROUP, else export GROUP to ""
 if [ -z "$GROUP_FOR_CONFIG" ]; then
-    echo "GROUP is empty"
+    echo "GROUP_FOR_CONFIG is empty"
     export GROUP_FOR_CONFIG=""
 else
-    echo "GROUP is NOT empty"
+    echo "GROUP_FOR_CONFIG is NOT empty"
 fi
 
 
